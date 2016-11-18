@@ -144,34 +144,32 @@ void draw_jetpt_vs_zpt(){
 void draw_correlation(){
   gStyle->SetOptTitle(1);
 
-  TString path = "root://cmsxrootd.fnal.gov//store/user/stata/AnalysisTrees/addedHistos/";
+  TString path = "root://cmsxrootd.fnal.gov//store/user/lpchbb/mwalker/AnalysisTrees/";
 
   std::vector<sample*> sampleVector;
 
-  //sample sample1(path+"allHistos_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root");
-  sample sample1(path+"allHistos_DYJetsToLL_BGenFilter_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0.root");
+  sample sample1(path+"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8//addedHistos//allHistos_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root");
   sample1.humanName = "sample 1";
   sample1.color = kRed;
   sampleVector.push_back(&sample1);
   
-  TString tag_string = "(BETA_BASICCALOJETS1>0.9 && MEDIANIPLOG10SIG_BASICCALOJETS1>0.868 && MEDIANLOG10TRACKANGLE_BASICCALOJETS1>-1.8";
-  tag_string += "&& TOTALTRACKANGLE_BASICCALOJETS1>0.1 && SUMIPSIG_BASICCALOJETS1>50 && TOTALTRACKPT_BASICCALOJETS1>5)"; 
+  TString tag_string = "(ALPHAMAX_BASICCALOJETS1PT20<0.25 && MEDIANIPLOG10SIG_BASICCALOJETS1PT20>0.5)";
 
   //TString var = "NGOODVERTICES";
   //double min = 0, max = 30, nbins = 15,  maxEff = 0.006;
-  //TString var = "BASICCALOJETS1DELTAR_BASICCALOJETS1";
-  //TString var = "BASICCALOJETS1DELTAR_BASICCALOJETS1";
+  //TString var = "BASICCALOJETS1PT20DELTAR_BASICCALOJETS1PT20";
+  TString var = "SELFDELTAR_BASICCALOJETS1PT20";
+  double min = 0, max = 5, nbins = 20, maxEff = 0.006;
+  //TString var = "SELFDELTAR_BASICCALOJETS1PT20";
   //double min = 0, max = 5, nbins = 20, maxEff = 0.006;
-  //TString var = "SELFDELTAR_BASICCALOJETS1";
-  //double min = 0, max = 5, nbins = 20, maxEff = 0.006;
-  //TString var = "NBASICCALOJETS1";
+  //TString var = "NBASICCALOJETS1PT20";
   //double min = 1, max = 9, nbins = 8, maxEff = 0.006;
   //TString var = "HT";
   //double min = 0, max = 300, nbins = 20, maxEff = 0.006;
   //TString var = "PTOSSF";
   //double min = 0, max = 100, nbins = 20, maxEff = 0.006;
-  TString var = "PT_BASICCALOJETS1";
-  double min = 0, max = 100, nbins = 20, maxEff = 0.006;
+  //TString var = "PT_BASICCALOJETS1PT20";
+  //double min = 0, max = 100, nbins = 20, maxEff = 0.006;
 
   //ALL JETS
   drawPlots(sampleVector, var, nbins, min, max, var, "Events", "");
@@ -193,11 +191,11 @@ void draw_correlation(){
   h_eff->Fit("f1", "R");
 
   //PT CUT
-  drawPlots(sampleVector, var, nbins, min, max, var, "Events", "PT_BASICCALOJETS1>60");
+  drawPlots(sampleVector, var, nbins, min, max, var, "Events", "PT_BASICCALOJETS1PT20>60");
   TH1D* h_all_ptCut = (TH1D*)sample1.lastHisto.Clone("all_ptCut");
   h_all_ptCut->SetTitle("all_ptCut");
 
-  drawPlots(sampleVector, var, nbins, min, max, var, "Events", tag_string + "&& PT_BASICCALOJETS1>60");
+  drawPlots(sampleVector, var, nbins, min, max, var, "Events", tag_string + "&& PT_BASICCALOJETS1PT20>60");
   TH1D* h_tagged_ptCut = (TH1D*)sample1.lastHisto.Clone("tagged_ptCut");
   h_tagged_ptCut->SetTitle("tagged_ptCut");
 
