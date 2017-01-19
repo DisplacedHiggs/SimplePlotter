@@ -85,6 +85,9 @@ void drawPlots(std::vector<sample*> sampleVector, const TString varname, const i
     //Project
     (sampleVector.at(isample)->tree)->Project(hname, varname, cutstring);
 
+    //Temp
+    for(int i=0; i<histos[sampleVector.at(isample)->name].GetNbinsX(); i++) cout << i << " " << histos[sampleVector.at(isample)->name].GetBinContent(i) << endl;
+
     //Normalize
     //cout << "!! HISTOGRAM IS NORMALIZED !!" << endl;
     //histos[sampleVector.at(isample)->name].Scale(1.0/histos[sampleVector.at(isample)->name].Integral());

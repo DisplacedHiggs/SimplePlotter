@@ -141,6 +141,54 @@ void draw_jetpt_vs_zpt(){
 }
 
 
+void draw_correlation_fromTrees(){
+  gStyle->SetOptTitle(1);
+
+  TString path = "root://cmsxrootd.fnal.gov//store/user/lpchbb/mwalker/AnalysisTrees/";
+
+  std::vector<sample*> sampleVector;
+
+  sample sample1(path+"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8//addedHistos//allHistos_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root");
+  //sample sample1(path+"WplusH_HToSSTobbbb_WToLNu_MH-125_MS-40_ctauS-1_TuneCUETP8M1_13TeV-powheg-pythia8/addedHistos/allHistos_WplusH_HToSSTobbbb_WToLNu_MH-125_MS-40_ctauS-1_TuneCUETP8M1_13TeV-powheg-pythia8_0.root");
+  sample1.humanName = "sample 1";
+  sample1.color = kRed;
+  sampleVector.push_back(&sample1);
+
+  //76 studies
+  //TString var1 = "PT_BASICCALOJETS1";
+  //TString var2 = "PT_INCLUSIVETAGGEDCALOJETSC";
+
+  //80 studies
+  TString var1 = "PT_BASICCALOJETS1PT20";
+  TString var2 = "PT_INCLUSIVETAGGEDCALOJETSE";
+  double min = 0, max = 10, nbins = 10, maxEff = 0.006;
+
+  //ALL JETS
+  drawPlots(sampleVector, var1, nbins, min, max, var1, "Events", "");
+  TH1D* h_all = (TH1D*)sample1.lastHisto.Clone("all");
+  h_all->SetTitle("all");
+
+  //TAGGED
+  drawPlots(sampleVector, var2, nbins, min, max, var2, "Events", "");
+  TH1D* h_tagged = (TH1D*)sample1.lastHisto.Clone("tagged");
+  h_tagged->SetTitle("tagged");
+
+  TH1D* h_eff = (TH1D*)h_tagged->Clone("eff");
+  h_eff->Divide(h_all);
+  h_eff->SetTitle("eff");
+
+  TCanvas* c1 = new TCanvas("c1", "c1", 1*480, 3*480);
+  c1->Divide(1,3);
+  c1->cd(1);
+  h_tagged->Draw();
+  c1->cd(2);
+  h_all->Draw();
+  c1->cd(3);
+  h_eff->Draw();
+  c1->Print("c1.pdf");
+
+}
+
 void draw_correlation(){
   gStyle->SetOptTitle(1);
 
@@ -149,21 +197,26 @@ void draw_correlation(){
   std::vector<sample*> sampleVector;
 
   sample sample1(path+"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8//addedHistos//allHistos_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root");
+  //sample sample1("~/jan3/histo_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_161018_170954_970.root");
+  //sample sample1(path+"TT_TuneCUETP8M1_13TeV-powheg-pythia8/addedHistos/allHistos_TT_TuneCUETP8M1_13TeV-powheg-pythia8.root");
   sample1.humanName = "sample 1";
   sample1.color = kRed;
   sampleVector.push_back(&sample1);
   
-  TString tag_string = "(ALPHAMAX_BASICCALOJETS1PT20<0.25 && MEDIANIPLOG10SIG_BASICCALOJETS1PT20>0.5)";
+  TString tag_string = "(ALPHAMAX_BASICCALOJETS1PT20<0.25 && MEDIANIPLOG10SIG_BASICCALOJETS1PT20>0.5)";//E
+  //TString tag_string = "(ALPHAMAX_BASICCALOJETS1PT20<0.5 && MEDIANIPLOG10SIG_BASICCALOJETS1PT20>0.0)";//F
 
   //TString var = "NGOODVERTICES";
   //double min = 0, max = 30, nbins = 15,  maxEff = 0.006;
+  //TString var = "NMATCHEDTRACKS_BASICCALOJETS1PT20";
+  //double min = 1, max = 9, nbins = 8, maxEff = 0.006;
   //TString var = "BASICCALOJETS1PT20DELTAR_BASICCALOJETS1PT20";
-  TString var = "SELFDELTAR_BASICCALOJETS1PT20";
-  double min = 0, max = 5, nbins = 20, maxEff = 0.006;
   //TString var = "SELFDELTAR_BASICCALOJETS1PT20";
   //double min = 0, max = 5, nbins = 20, maxEff = 0.006;
-  //TString var = "NBASICCALOJETS1PT20";
-  //double min = 1, max = 9, nbins = 8, maxEff = 0.006;
+  //TString var = "SELFDELTAR_BASICCALOJETS1PT20";
+  //double min = 0, max = 5, nbins = 20, maxEff = 0.006;
+  TString var = "NBASICCALOJETS1PT20";
+  double min = 1, max = 9, nbins = 8, maxEff = 0.006;
   //TString var = "HT";
   //double min = 0, max = 300, nbins = 20, maxEff = 0.006;
   //TString var = "PTOSSF";
