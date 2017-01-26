@@ -23,6 +23,8 @@ class sample {
   sample(TString);
   ~sample();
 
+  TString tree_name = "treeR";
+
   TString name;
   TString humanName;
 
