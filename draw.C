@@ -3,6 +3,13 @@
 using namespace std;
 
 
+void files_test(){
+  std::vector<TString> test;
+  test.push_back("a.root");
+  test.push_back("b.root");
+  sample2 mysample2(test);
+}
+
 void eff_vs_x_fromJetTrees(){
 
   TString path = "root://cmsxrootd.fnal.gov//store/group/lpchbb/noreplica/stata/AnalysisTrees/addedHistos/";
@@ -23,60 +30,62 @@ void eff_vs_x_fromJetTrees(){
   //ZZ_TuneCUETP8M1_13TeV-pythia8 10.32
   //WW_TuneCUETP8M1_13TeV-pythia8 118.7
 
-  sample sample1(path+"allHistos_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0.root");
+  sample sample1(path+"allHistos_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0.root");
   sample1.tree_name = "tree_BASICCALOJETS1PT20MATCHED";
-  sample1.humanName = "TTbar";
+  sample1.humanName = "DY";
   sample1.color = kBlue;
   sampleVector.push_back(&sample1);
 
-  sample sample2(path+"allHistos_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_0.root");
+  /*sample sample2(path+"allHistos_ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1_0.root");
   sample2.tree_name = "tree_BASICCALOJETS1PT20MATCHED";
   sample2.humanName = "ZH, MS=40, dddd";
   sample2.color = kRed;
   sampleVector.push_back(&sample2);
+  */
 
   //80 studies
   TString var1 = "NBASICCALOJETS1PT20MATCHED";
   double min = 0, max = 8, nbins = 8, maxEff = 0.006;
 
   TString tag_string = "(ALPHAMAX_BASICCALOJETS1PT20MATCHED<0.25 && MEDIANIPLOG10SIG_BASICCALOJETS1PT20MATCHED>0.5)";//E
+  //TString tag_string = "(ALPHAMAX_BASICCALOJETS1PT20MATCHED<0.25 && MEDIANIPLOG10SIG_BASICCALOJETS1PT20MATCHED>0.5 && NMATCHEDTRACKS_BASICCALOJETS1PT20>4)";//E
 
   //ALL JETS
   drawPlots(sampleVector, var1, nbins, min, max, var1, "Events", "");
   TH1D* h_all1 = (TH1D*)sample1.lastHisto.Clone("all_1");
-  TH1D* h_all2 = (TH1D*)sample2.lastHisto.Clone("all_2");
+  //TH1D* h_all2 = (TH1D*)sample2.lastHisto.Clone("all_2");
   h_all1->SetTitle("all");
-  h_all2->SetTitle("all");
+  //h_all2->SetTitle("all");
 
   //TAGGED
   drawPlots(sampleVector, var1, nbins, min, max, var1, "Events", tag_string);
   TH1D* h_tagged1 = (TH1D*)sample1.lastHisto.Clone("tagged");
-  TH1D* h_tagged2 = (TH1D*)sample2.lastHisto.Clone("tagged");
+  //TH1D* h_tagged2 = (TH1D*)sample2.lastHisto.Clone("tagged");
   h_tagged1->SetTitle("tagged");
-  h_tagged2->SetTitle("tagged");
+  //h_tagged2->SetTitle("tagged");
 
   TH1D* h_eff1 = (TH1D*)h_tagged1->Clone("eff1");
   h_eff1->Divide(h_all1);
   h_eff1->SetTitle("eff");
-
+  /*
   TH1D* h_eff2  = (TH1D*)h_tagged2->Clone("eff2");
   h_eff2->Divide(h_all2);
   h_eff2->SetTitle("eff");
   h_eff2->SetLineColor(kRed);
-
+  */
   TCanvas* c1 = new TCanvas("c1", "c1", 1*480, 3*480);
   c1->Divide(1,3);
   c1->cd(1);
-  h_tagged2->DrawNormalized();
-  h_tagged1->DrawNormalized("SAME");
+  h_tagged1->DrawNormalized();
+  //h_tagged2->DrawNormalized("SAME");
   c1->cd(2);
-  h_all2->DrawNormalized();
-  h_all1->DrawNormalized("SAME");
+  h_all1->DrawNormalized();
+  //h_all2->DrawNormalized("SAME");
   c1->cd(3);
-  h_eff2->SetMinimum(0);
-  h_eff2->SetMaximum(.28);
-  h_eff2->Draw();
-  h_eff1->Draw("SAME");
+  //  h_eff2->SetMinimum(0);
+  //h_eff2->SetMaximum(.28);
+  //h_eff2->Draw("SAME");
+  h_eff1->Draw();
   c1->Print("c.pdf");
 
 }
@@ -143,6 +152,140 @@ void flavor_study(){
   h_eff2->Draw();
   h_eff1->Draw("SAME");
   c1->Print("c.pdf");
+
+  
+}
+
+
+void ttbar_emu(){
+
+  TString path = "root://cmsxrootd.fnal.gov//store/user/lpchbb/mwalker/AnalysisTrees/";
+
+  std::vector<sample*> sampleVector;
+
+  sample sample1(path+"TT_TuneCUETP8M1_13TeV-powheg-pythia8/addedHistos/allHistos_TT_TuneCUETP8M1_13TeV-powheg-pythia8.root");
+  sample1.humanName = "TTbar";
+  sample1.color = kBlue;
+  sampleVector.push_back(&sample1);
+
+  //80 studies
+  TString var1 = "NINCLUSIVETAGGEDCALOJETSE";
+  double min = 0, max = 7, nbins = 7, maxEff = 0.006;
+  
+  //SF
+  drawPlots(sampleVector, var1, nbins, min, max, var1, "Events", "(NGOODMUONS[0]==2 || NGOODELECTRONS[0]==2)");
+  TH1D* h_sf = (TH1D*)sample1.lastHisto.Clone("sf");
+
+  //EMU
+  drawPlots(sampleVector, var1, nbins, min, max, var1, "Events", "NGOODMUONS[0]==1 && NGOODELECTRONS[0]==1");
+  TH1D* h_emu = (TH1D*)sample1.lastHisto.Clone("emu");
+  h_emu->SetLineColor(kRed); 
+
+  TCanvas* c1 = new TCanvas("c1", "c1", 1*480, 1*480);
+  h_emu->DrawNormalized();
+  h_sf->DrawNormalized("SAME");
+  c1->Print("c.pdf");
+  gPad->SetLogy();
+  c1->Print("c_log.pdf");
+  
+}
+
+void DY_pt(){
+
+  TString path = "root://cmsxrootd.fnal.gov//store/user/lpchbb/mwalker/AnalysisTrees/";
+
+  std::vector<sample*> sampleVector;
+
+  sample sample1(path+"DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/addedHistos/allHistos_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root");
+  sample1.humanName = "DY";
+  sample1.color = kBlue;
+  sampleVector.push_back(&sample1);
+
+  //80 studies
+  TString var1 = "NINCLUSIVETAGGEDCALOJETSE";
+  double min = 0, max = 7, nbins = 7, maxEff = 0.006;
+  
+  //SF
+  drawPlots(sampleVector, var1, nbins, min, max, var1, "Events", "NOSSF == 1 && ONZ");
+  TH1D* h_sf = (TH1D*)sample1.lastHisto.Clone("sf");
+
+  //EMU
+  drawPlots(sampleVector, var1, nbins, min, max, var1, "Events", "NOSSF == 1 && !ONZ");
+  TH1D* h_emu = (TH1D*)sample1.lastHisto.Clone("emu");
+  h_emu->SetLineColor(kRed); 
+
+  TCanvas* c1 = new TCanvas("c1", "c1", 1*480, 1*480);
+  h_emu->DrawNormalized();
+  h_sf->DrawNormalized("SAME");
+  c1->Print("c.pdf");
+  gPad->SetLogy();
+  c1->Print("c_log.pdf");
+  
+}
+
+
+
+void qcd_jets(){
+
+  //TString path = "root://cmsxrootd.fnal.gov//store/user/lpchbb/mwalker/AnalysisTrees/";
+  TString path = "root://cmsxrootd.fnal.gov//store/group/lpchbb/kreis/AnalysisTrees/";
+
+  std::vector<sample*> sampleVector;
+
+  sample sample1(path+"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/add_noSkim/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root");
+  sample1.humanName = "DY";
+  sample1.color = kBlue;
+  sampleVector.push_back(&sample1);
+
+  sample sample2(path+"GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/add_noSkim/GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root");
+  sample2.humanName = "GJets";
+  sample2.color = kViolet;
+  sampleVector.push_back(&sample2);
+
+  sample sample3(path+"QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/add_noSkim/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8.root");
+  sample3.humanName = "QCD";
+  sample3.color = kRed;
+  sampleVector.push_back(&sample3);
+
+  //80 studies tagger
+  TString var1 = "NINCLUSIVETAGGEDCALOJETSE";
+  double min = 0, max = 7, nbins = 7;
+  drawPlots(sampleVector, var1, nbins, min, max, var1, "Events", "");
+  TH1D* h1 = (TH1D*)sample1.lastHisto.Clone("DY");
+  TH1D* h2 = (TH1D*)sample2.lastHisto.Clone("GJets");
+  TH1D* r = (TH1D*)h1->Clone("r");
+  r->Divide(h2);
+  r->SetMinimum(0);
+  r->SetMaximum(5);
+  TCanvas* cr = new TCanvas("cr", "cr", 640, 480);
+  r->Draw("hist e");
+  cr->SaveAs("h_Ratio.pdf");
+
+
+  //80 studies tagger
+  TString var2 = "HT";
+  min = 0; max = 300; nbins = 30;
+  drawPlots(sampleVector, var2, nbins, min, max, var2, "Events", "");
+
+  //80 studies tagger
+  TString var3 = "NBASICCALOJETS1PT20";
+  min = 0; max = 10; nbins = 10;
+  drawPlots(sampleVector, var3, nbins, min, max, var3, "Events", "");
+
+  //80 studies tagger
+  TString var4 = "PT_BASICCALOJETS1PT20";
+  min = 0; max = 100; nbins = 10;
+  drawPlots(sampleVector, var4, nbins, min, max, var4, "Events", "");
+
+  //80 studies tagger
+  TString var5 = "N_bJetsCSVL";
+  min = 0; max = 11; nbins = 10;
+  drawPlots(sampleVector, var5, nbins, min, max, var4, "Events", "");
+
+  //80 studies tagger
+  TString var6 = "N_bJetsCSVM";
+  min = 0; max = 11; nbins = 10;
+  drawPlots(sampleVector, var6, nbins, min, max, var4, "Events", "");
 
   
 }
